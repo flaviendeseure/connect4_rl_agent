@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "projet"
+version = "0.1.0"
+description = ""
+authors = ["Yoan Gabison <yoan.gabison@student-cs.fr>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10,<3.12"
+pettingzoo = "^1.22.3"
+pygame = "^2.3.0"
+tqdm = "^4.65.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+main = "projet.main:main"
