@@ -13,7 +13,8 @@ class Game:
                  model_name: str = "qlearning", player_1_type: str = "qlearning",
                  player_2_type: str = "qlearning") -> None:
         self.env = connect_four_v3.env(render_mode=render_mode)
-        self.player_0, self.player_1 = self._create_players(player_1_type, player_2_type)
+        self.player_0, self.player_1 = self._create_players(player_1_type,
+                                                            player_2_type)
         self.models_dir = Path("projet/models") / model_name
         self.models_dir.mkdir(exist_ok=True, parents=True)
         self.player_0_path: Path = self.models_dir / "player_0.pkl"
@@ -66,7 +67,8 @@ class Game:
                     elif reward == 0 and agent == "player_0":
                         nb_draws += 1
                     if i % 1000 == 0 and verbose and i != 0 and agent == "player_0":
-                        print(f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}")
+                        print(
+                            f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}")
 
                     # if verbose:
                     #     print(f"Termination ({agent}), Reward: {reward}, info: {info}")
@@ -93,7 +95,7 @@ class Game:
                 self.save()
         self.save()
 
-    def eval(self, nb_eval : int, verbose : int = 0):
+    def eval(self, nb_eval: int, verbose: int = 0):
         if isinstance(self.player_0, Human) or isinstance(self.player_1, Human):
             raise Exception("You can't eval with a human player")
 
@@ -160,7 +162,7 @@ class Game:
                     self.player_1.update(last_observation, action, reward,
                                          termination, observation)
                 self.env.render()
-                
+
     def watch(self):
         env = self.env
         self.env = connect_four_v3.env(render_mode="human")

@@ -6,3 +6,6 @@
 
 # Cache files
 *.pyc
+
+# models
+projet.models/

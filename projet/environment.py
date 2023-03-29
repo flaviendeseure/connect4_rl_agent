@@ -64,7 +64,6 @@ import gymnasium
 import numpy as np
 import pygame
 from gymnasium import spaces
-
 from pettingzoo import AECEnv
 from pettingzoo.utils import wrappers
 from pettingzoo.utils.agent_selector import agent_selector
@@ -168,8 +167,8 @@ class raw_env(AECEnv):
     # action in this case is a value from 0 to 6 indicating position to move on the flat representation of the connect4 board
     def step(self, action):
         if (
-            self.truncations[self.agent_selection]
-            or self.terminations[self.agent_selection]
+                self.truncations[self.agent_selection]
+                or self.terminations[self.agent_selection]
         ):
             return self._was_dead_step(action)
         # assert valid move
@@ -303,10 +302,10 @@ class raw_env(AECEnv):
         for c in range(column_count - 3):
             for r in range(row_count):
                 if (
-                    board[r][c] == piece
-                    and board[r][c + 1] == piece
-                    and board[r][c + 2] == piece
-                    and board[r][c + 3] == piece
+                        board[r][c] == piece
+                        and board[r][c + 1] == piece
+                        and board[r][c + 2] == piece
+                        and board[r][c + 3] == piece
                 ):
                     return True
 
@@ -314,10 +313,10 @@ class raw_env(AECEnv):
         for c in range(column_count):
             for r in range(row_count - 3):
                 if (
-                    board[r][c] == piece
-                    and board[r + 1][c] == piece
-                    and board[r + 2][c] == piece
-                    and board[r + 3][c] == piece
+                        board[r][c] == piece
+                        and board[r + 1][c] == piece
+                        and board[r + 2][c] == piece
+                        and board[r + 3][c] == piece
                 ):
                     return True
 
@@ -325,10 +324,10 @@ class raw_env(AECEnv):
         for c in range(column_count - 3):
             for r in range(row_count - 3):
                 if (
-                    board[r][c] == piece
-                    and board[r + 1][c + 1] == piece
-                    and board[r + 2][c + 2] == piece
-                    and board[r + 3][c + 3] == piece
+                        board[r][c] == piece
+                        and board[r + 1][c + 1] == piece
+                        and board[r + 2][c + 2] == piece
+                        and board[r + 3][c + 3] == piece
                 ):
                     return True
 
@@ -336,10 +335,10 @@ class raw_env(AECEnv):
         for c in range(column_count - 3):
             for r in range(3, row_count):
                 if (
-                    board[r][c] == piece
-                    and board[r - 1][c + 1] == piece
-                    and board[r - 2][c + 2] == piece
-                    and board[r - 3][c + 3] == piece
+                        board[r][c] == piece
+                        and board[r - 1][c + 1] == piece
+                        and board[r - 2][c + 2] == piece
+                        and board[r - 3][c + 3] == piece
                 ):
                     return True
 

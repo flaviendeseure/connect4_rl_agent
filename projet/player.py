@@ -1,8 +1,4 @@
-import json
-from collections import defaultdict
-
 import numpy as np
-import pickle
 
 
 class Human:
@@ -15,6 +11,7 @@ class Human:
         while not action.isdigit() or int(action) not in available_actions:
             action = input("Command: ")
         return np.int64(action)
+
 
 class Random:
     def __init__(self, action_space, agent):
@@ -86,34 +83,4 @@ class QLearner:
         self.eps = max(self.eps - self.eps_step, self.eps_min)
 
     def reset(self):
-        # self.q_values = defaultdict(lambda: np.zeros(7))
         self.q_values = {}
-
-
-    @staticmethod
-    def serialize_defaultdict(obj):
-        if isinstance(obj, defaultdict):
-            result = {}
-            for k, v in obj.items():
-                result[k] = v
-            return result
-        elif isinstance(obj, np.ndarray):
-            return obj.tolist()
-        else:
-            raise TypeError(f'Object of type {type(obj)} is not JSON serializable')
-
-    @staticmethod
-    def deserialize_defaultdict(d):
-        result = defaultdict(lambda: 0)
-        for k, v in d.items():
-            if isinstance(v, list):
-                result[k] = np.array(v)
-            else:
-                result[k] = v
-        return result
-
-    def save(self, path):
-        pickle.dump(self.q_values, open(path, "wb"))
-
-    def load(self, path):
-        self.q_values = pickle.load(open(path, "rb"))
