@@ -30,8 +30,7 @@ class Agent(ABC):
         self.models_dir.mkdir(exist_ok=True, parents=True)
         self.player_path: Path = self.models_dir / name
 
-        if load:
-            self.load()
+        
 
         self.reset()
 
@@ -40,7 +39,7 @@ class Agent(ABC):
         if np.random.random() < eps:
             return self.action_space(self.agent).sample(mask=obs["action_mask"])
         else:
-            self.get_best_action(obs)
+            return self.get_best_action(obs)
 
     def get_action(self, obs: dict, eps: float | None = None) -> int:
         return self.eps_greedy(obs, eps)

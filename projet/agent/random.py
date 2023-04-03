@@ -15,8 +15,14 @@ class Random(Agent):
     def update(self, obs, action, reward, terminated, next_obs):
         pass
 
-    def eps_greedy(self, obs):
+    def get_best_action(self, obs):
         return self.action_space(self.agent).sample(mask=obs["action_mask"])
 
     def reset(self):
+        pass
+    
+    def load(self):
+        pass
+
+    def save(self):
         pass

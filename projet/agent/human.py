@@ -11,3 +11,6 @@ class Human:
         while not action.isdigit() or int(action) not in available_actions:
             action = input("Command: ")
         return np.int64(action)
+
+    def load(self):
+        pass

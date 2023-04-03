@@ -35,7 +35,7 @@ class Game:
                         nb_wins_agent_2 += 1
                     elif reward == 0 and agent == "player_0":
                         nb_draws += 1
-                    if i % 1000 == 0 and verbose and i != 0 and agent == "player_0":
+                    if i % 50 == 0 and verbose and i != 0 and agent == "player_0":
                         print(
                             f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}, Ratio: {100 * (nb_wins_agent_1 / (nb_wins_agent_2 + nb_wins_agent_1)) : .2f}"
                         )
@@ -61,7 +61,7 @@ class Game:
                         self.player_1.update(last_observation, action, reward,
                                              termination, observation)
 
-            if save and i % 1000 == 0:
+            if save and i % 100 == 0:
                 self.save()
         self.save()
 
