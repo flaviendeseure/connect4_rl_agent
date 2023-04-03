@@ -5,7 +5,7 @@ from pathlib import Path
 from pettingzoo.classic import connect_four_v3
 from tqdm import tqdm
 
-from projet.player import QLearner, Human, Random
+from projet.player import QLearner, Human, Random, Sarsa
 
 
 class Game:
@@ -34,6 +34,8 @@ class Game:
                     players.append(Random(self.env.action_space, agent))
                 elif player_1_type == "human":
                     players.append(Human())
+                elif player_1_type == "sarsa":
+                    players.append(Sarsa(self.env.action_space, agent))
             else:
                 if player_2_type == "qlearning":
                     players.append(QLearner(self.env.action_space, agent))
@@ -41,6 +43,8 @@ class Game:
                     players.append(Random(self.env.action_space, agent))
                 elif player_2_type == "human":
                     players.append(Human())
+                elif player_2_type == "sarsa":
+                    players.append(Sarsa(self.env.action_space, agent))
             self.env.step(0)
             if agent == "player_1":
                 break
@@ -68,7 +72,8 @@ class Game:
                         nb_draws += 1
                     if i % 1000 == 0 and verbose and i != 0 and agent == "player_0":
                         print(
-                            f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}")
+                            f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}, Ratio: {nb_wins_agent_1 / (nb_wins_agent_2 + nb_wins_agent_1) : .2f}"
+                        )
 
                     # if verbose:
                     #     print(f"Termination ({agent}), Reward: {reward}, info: {info}")
