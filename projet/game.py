@@ -1,55 +1,20 @@
-import pickle
 import time
-from pathlib import Path
 
 from pettingzoo.classic import connect_four_v3
+from pettingzoo.utils import OrderEnforcingWrapper
 from tqdm import tqdm
 
-from projet.player import QLearner, Human, Random, Sarsa
+from projet.agent import Human
+from projet.agent.base_agent import Agent
 
 
 class Game:
-    def __init__(self, render_mode: str = "ansi", load_model: bool = False,
-                 model_name: str = "qlearning", player_1_type: str = "qlearning",
-                 player_2_type: str = "qlearning") -> None:
-        self.env = connect_four_v3.env(render_mode=render_mode)
-        self.player_0, self.player_1 = self._create_players(player_1_type,
-                                                            player_2_type)
-        self.models_dir = Path("projet/models") / model_name
-        self.models_dir.mkdir(exist_ok=True, parents=True)
-        self.player_0_path: Path = self.models_dir / "player_0.pkl"
-        self.player_1_path: Path = self.models_dir / "player_1.pkl"
-        self.path: Path = self.models_dir / "model.pkl"
-        if load_model:
-            self.load()
-
-    def _create_players(self, player_1_type: str, player_2_type: str) -> list:
-        players: list = []
-        self.env.reset()
-        for agent in self.env.agent_iter():
-            if agent == "player_0":
-                if player_1_type == "qlearning":
-                    players.append(QLearner(self.env.action_space, agent))
-                elif player_1_type == "random":
-                    players.append(Random(self.env.action_space, agent))
-                elif player_1_type == "human":
-                    players.append(Human())
-                elif player_1_type == "sarsa":
-                    players.append(Sarsa(self.env.action_space, agent))
-            else:
-                if player_2_type == "qlearning":
-                    players.append(QLearner(self.env.action_space, agent))
-                elif player_2_type == "random":
-                    players.append(Random(self.env.action_space, agent))
-                elif player_2_type == "human":
-                    players.append(Human())
-                elif player_2_type == "sarsa":
-                    players.append(Sarsa(self.env.action_space, agent))
-            self.env.step(0)
-            if agent == "player_1":
-                break
-        self.env.reset()
-        return players
+    def __init__(
+            self, env: OrderEnforcingWrapper, player_0: Agent, player_1: Agent
+    ) -> None:
+        self.env = env
+        self.player_0: Agent = player_0
+        self.player_1: Agent = player_1
 
     def train(self, epoch: int, verbose: int = 0, save: bool = True) -> None:
         if isinstance(self.player_0, Human) or isinstance(self.player_1, Human):
@@ -72,7 +37,7 @@ class Game:
                         nb_draws += 1
                     if i % 1000 == 0 and verbose and i != 0 and agent == "player_0":
                         print(
-                            f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}, Ratio: {nb_wins_agent_1 / (nb_wins_agent_2 + nb_wins_agent_1) : .2f}"
+                            f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}, Ratio: {100 * (nb_wins_agent_1 / (nb_wins_agent_2 + nb_wins_agent_1)) : .2f}"
                         )
 
                     # if verbose:
@@ -190,15 +155,5 @@ class Game:
         self.env = env
 
     def save(self):
-        q_values = {**self.player_0.q_values, **self.player_1.q_values}
-        pickle.dump(q_values, open(self.path, "wb"))
-
-    def load(self):
-        if not self.path.exists():
-            return
-
-        q_values = pickle.load(open(self.path, "rb"))
-        if not isinstance(self.player_0, Human):
-            self.player_0.q_values = q_values
-        if not isinstance(self.player_1, Human):
-            self.player_1.q_values = q_values
+        self.player_0.save()
+        self.player_1.save()

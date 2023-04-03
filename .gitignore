@@ -8,4 +8,4 @@
 *.pyc
 
 # models
-projet.models/
+projet/models/
