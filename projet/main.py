@@ -67,3 +67,7 @@ def main():
         game.train(epoch=args.epoch, verbose=args.verbose, save=args.save)
     elif args.eval:
         game.eval(nb_eval=args.epoch, verbose=args.verbose)
+
+
+if __name__ == "__main__":
+    main()
