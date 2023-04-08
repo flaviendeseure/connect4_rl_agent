@@ -14,9 +14,8 @@ class Agent(ABC):
             eps_init: float = .5,
             eps_min: float = 1e-5,
             eps_step: float = 1e-3,
-            agent_type: str = "base",
+            agent_type: str = "actor_critic",
             name: str = "Agent",
-            load: bool = False
     ):
 
         self.action_space: pettingzoo.utils.wrappers.base = action_space
@@ -29,8 +28,6 @@ class Agent(ABC):
         self.models_dir: Path = Path("projet/models") / agent_type
         self.models_dir.mkdir(exist_ok=True, parents=True)
         self.player_path: Path = self.models_dir / name
-
-        
 
         self.reset()
 
@@ -56,7 +53,7 @@ class Agent(ABC):
             self,
             obs: dict,
             action: int,
-            reward: int,
+            reward: float,
             terminated: bool,
             next_obs: dict
     ):

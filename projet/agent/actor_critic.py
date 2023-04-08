@@ -1,14 +1,15 @@
+from pathlib import Path
+
+import numpy as np
 import pettingzoo
 import torch
+import torch.distributions as dist
+import torch.optim as optim
 from torch import nn
 
 from projet.agent.base_agent import Agent
-from pathlib import Path
-import numpy as np  
-import torch.optim as optim
-import torch.distributions as dist
 
-HIDDEN_SIZE = 256 #128
+HIDDEN_SIZE = 256  # 128
 
 
 class ActorNetwork(nn.Module):
@@ -22,7 +23,7 @@ class ActorNetwork(nn.Module):
         self.actor_out_layer: nn.Linear = nn.Linear(HIDDEN_SIZE, action_size)
 
     def forward(
-        self, input_x: torch.Tensor
+            self, input_x: torch.Tensor
     ) -> torch.Tensor:
         input_x = nn.functional.relu(self.conv_1(input_x))
         input_x = nn.functional.relu(self.conv_2(input_x))
@@ -32,6 +33,7 @@ class ActorNetwork(nn.Module):
         input_x = nn.functional.softmax(self.actor_out_layer(input_x), dim=0)
         input_x = dist.Categorical(input_x)
         return input_x
+
 
 class CriticNetwork(nn.Module):
     def __init__(self) -> None:
@@ -51,7 +53,7 @@ class CriticNetwork(nn.Module):
         input_x = nn.functional.relu(self.fc2_layer(input_x))
         output = nn.functional.sigmoid(self.critic_out_layer(input_x))
         return output
-    
+
 
 class ActorCritic(Agent):
     def __init__(self,
@@ -61,18 +63,16 @@ class ActorCritic(Agent):
                  eps_init: float = .5,
                  eps_min: float = 1e-5,
                  eps_step: float = 1e-3,
-                 agent_type: str = "base",
+                 agent_type: str = "actor_critic",
                  name: str = "Agent",
                  load: bool = False,
                  lr_actor=1e-2,
                  lr_critics=1e-2,
                  ):
-        super().__init__(
-            action_space, agent, gamma, eps_init, eps_min, eps_step, agent_type,
-            name, load
-        )
-        self.actor_path = self.models_dir / Path("actor.pth")
-        self.critic_path = self.models_dir / Path("critic.pth")
+        super().__init__(action_space, agent, gamma, eps_init, eps_min, eps_step,
+                         agent_type, name)
+        self.actor_path = self.models_dir / Path(f"{name}_actor.pth")
+        self.critic_path = self.models_dir / Path(f"{name}_critic.pth")
 
         self.gamma = gamma
 
@@ -115,7 +115,7 @@ class ActorCritic(Agent):
             reward: int,
             terminated: bool,
             next_obs: dict
-    ):  
+    ):
         observation = obs["observation"]
         observation = torch.Tensor(np.where(
             np.logical_and(
@@ -139,13 +139,14 @@ class ActorCritic(Agent):
         target: float = reward + self.gamma * value_next_state.detach()
 
         # Calculate losses
-        #-norm_dist.log_prob(action).unsqueeze(0) * critic_loss.detach()
+        # -norm_dist.log_prob(action).unsqueeze(0) * critic_loss.detach()
         critic_loss: torch.Tensor = self.critic_loss_fn(value_state, target)
-        actor_loss = -self.actor(observation).log_prob(torch.tensor([action])).float() * critic_loss.detach()
+        actor_loss = -self.actor(observation).log_prob(
+            torch.tensor([action])).float() * critic_loss.detach()
 
         # Perform backpropagation
         self.actor_optimizer.zero_grad()
-        actor_loss.backward()        
+        actor_loss.backward()
         self.actor_optimizer.step()
 
         self.critic_optimizer.zero_grad()

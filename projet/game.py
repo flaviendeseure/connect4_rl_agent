@@ -10,7 +10,8 @@ from projet.agent.base_agent import Agent
 
 class Game:
     def __init__(
-            self, env: OrderEnforcingWrapper, player_0: Agent, player_1: Agent
+            self, env: OrderEnforcingWrapper, player_0: Agent | Human,
+            player_1: Agent | Human
     ) -> None:
         self.env = env
         self.player_0: Agent = player_0
@@ -35,13 +36,15 @@ class Game:
                         nb_wins_agent_2 += 1
                     elif reward == 0 and agent == "player_0":
                         nb_draws += 1
-                    if i % 50 == 0 and verbose and i != 0 and agent == "player_0":
+                    if i % 500 == 0 and verbose and i != 0 and agent == "player_0":
                         print(
                             f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}, Ratio: {100 * (nb_wins_agent_1 / (nb_wins_agent_2 + nb_wins_agent_1)) : .2f}"
                         )
 
                     # if verbose:
-                    #     print(f"Termination ({agent}), Reward: {reward}, info: {info}")
+                    #     print(
+                    #       f"Termination ({agent}), Reward: {reward}, info: {info}"
+                    #     )
                     self.env.step(None)
                 elif truncation:
                     if verbose:
@@ -61,7 +64,7 @@ class Game:
                         self.player_1.update(last_observation, action, reward,
                                              termination, observation)
 
-            if save and i % 100 == 0:
+            if save and i % 1000 == 0:
                 self.save()
         self.save()
 

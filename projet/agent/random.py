@@ -20,7 +20,7 @@ class Random(Agent):
 
     def reset(self):
         pass
-    
+
     def load(self):
         pass
 
