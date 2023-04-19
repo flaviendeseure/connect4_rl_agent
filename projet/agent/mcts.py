@@ -57,7 +57,7 @@ class MCTS(Agent):
         # need to define how the simulation will be performed based on the problem
         # Return the reward, next observation, and a boolean indicating if the simulation has terminated
         pass
-    
+
     def backpropagate(self, node: MCTSNode, reward: float) -> None:
         while node is not None:
             node.visits += 1
@@ -65,7 +65,7 @@ class MCTS(Agent):
             node = node.parent
 
     def is_leaf_node(self, node: MCTSNode, obs: dict) -> bool:
-        # Define your leaf node condition here based on your problem
+        # Define  leaf node condition here based on the problem
         pass
 
     def has_unexplored_actions(self, node: MCTSNode, obs: dict) -> bool:
