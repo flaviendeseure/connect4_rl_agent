@@ -3,7 +3,7 @@ import argparse
 from pettingzoo.classic import connect_four_v3
 from pettingzoo.utils import OrderEnforcingWrapper
 
-from projet.agent import ActorCritic, Random, Human
+from projet.agent import ActorCritic, Random, Human,MCTS
 from projet.agent.base_agent import Agent
 from projet.game import Game
 
@@ -15,6 +15,8 @@ def get_player(player_type: str, space, name: str, load: bool = False) -> Agent 
         return Random(space, name, name=name)
     elif player_type == "human":
         return Human()
+    elif player_type == "mcts":
+        return MCTS(space, name)
     else:
         raise Exception("Invalid player")
 
