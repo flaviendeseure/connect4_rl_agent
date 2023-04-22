@@ -96,7 +96,7 @@ Once you have installed the dependencies, you can use the project by running the
   ``` 
   - With a virtual environment
   ```sh
-  python -m connect4_rl_agent --train --epoch 10000 --player_0 actor_critic --player_1 actor_critic
+  python -m projet --train --epoch 10000 --player_0 actor_critic --player_1 actor_critic
   ```   
 - **Here is an example command to evaluate an agent(s)**:
   - With poetry
@@ -105,7 +105,7 @@ Once you have installed the dependencies, you can use the project by running the
   ``` 
   - With a virtual environment
   ```sh
-  python -m connect4_rl_agent --eval --player_0 actor_critic --player_1 random --epoch 1000
+  python -m projet --eval --player_0 actor_critic --player_1 random --epoch 1000
   ```   
 - **Here is an example command to play the game against the agent(s)**:
   - With poetry
@@ -114,7 +114,7 @@ Once you have installed the dependencies, you can use the project by running the
   ``` 
   - With a virtual environment
   ```sh
-  python -m connect4_rl_agent --play --player_0 human --player_1 actor_critic
+  python -m projet --play --player_0 human --player_1 actor_critic
   ```   
 
 **The available command line arguments are**:  

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pettingzoo
@@ -31,14 +32,14 @@ class Agent(ABC):
 
         self.reset()
 
-    def eps_greedy(self, obs: dict, eps: float | None = None) -> int:
+    def eps_greedy(self, obs: dict, eps: Union[float,None] = None) -> int:
         eps = eps or self.eps
         if np.random.random() < eps:
             return self.action_space(self.agent).sample(mask=obs["action_mask"])
         else:
             return self.get_best_action(obs)
 
-    def get_action(self, obs: dict, eps: float | None = None) -> int:
+    def get_action(self, obs: dict, eps: Union[float,None] = None) -> int:
         return self.eps_greedy(obs, eps)
 
     def epsilon_decay(self) -> None:
