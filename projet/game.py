@@ -1,4 +1,5 @@
 import time
+from typing import Union
 
 from pettingzoo.classic import connect_four_v3
 from pettingzoo.utils import OrderEnforcingWrapper
@@ -10,8 +11,8 @@ from projet.agent.base_agent import Agent
 
 class Game:
     def __init__(
-            self, env: OrderEnforcingWrapper, player_0: Agent | Human,
-            player_1: Agent | Human
+            self, env: OrderEnforcingWrapper, player_0: Union[Agent, Human],
+            player_1: Union[Agent, Human]
     ) -> None:
         self.env = env
         self.player_0: Agent = player_0
@@ -105,7 +106,7 @@ class Game:
     def play(self):
         self.env.reset()
         for agent in self.env.agent_iter():
-            last_observation, reward, termination, truncation, info = self.env.last()
+            last_observation, reward, termination, truncation, _ = self.env.last()
             if termination:
                 self.env.step(None)
                 if reward == 1:
@@ -123,7 +124,7 @@ class Game:
                     action = self.player_1.get_action(last_observation)
                 self.env.step(action)
 
-                observation, reward, termination, truncation, info = self.env.last()
+                observation, reward, termination, truncation, _ = self.env.last()
                 if agent == "player_0" and not isinstance(self.player_0, Human):
                     self.player_0.update(last_observation, action, reward,
                                          termination, observation)

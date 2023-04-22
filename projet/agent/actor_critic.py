@@ -12,7 +12,7 @@ from projet.agent.base_agent import Agent
 HIDDEN_SIZE = 256  # 128
 
 
-class ActorNetwork(nn.Module):
+class ConvActorNetwork(nn.Module):
     def __init__(self, action_size: int) -> None:
         super().__init__()
         self.conv_1 = nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=0)
@@ -28,13 +28,13 @@ class ActorNetwork(nn.Module):
         input_x = nn.functional.relu(self.conv_1(input_x))
         input_x = nn.functional.relu(self.conv_2(input_x))
         input_x = self.flatten(input_x)
-        input_x = self.fc1_layer(input_x)
-        input_x = self.fc2_layer(input_x)
+        input_x = nn.functional.relu(self.fc1_layer(input_x))
+        input_x = nn.functional.relu(self.fc2_layer(input_x))
         input_x = nn.functional.softmax(self.actor_out_layer(input_x), dim=0)
         return input_x
 
 
-class CriticNetwork(nn.Module):
+class ConvCriticNetwork(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self.conv_1 = nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=0)
@@ -47,6 +47,38 @@ class CriticNetwork(nn.Module):
     def forward(self, input_x: torch.Tensor) -> torch.Tensor:
         input_x = nn.functional.relu(self.conv_1(input_x))
         input_x = nn.functional.relu(self.conv_2(input_x))
+        input_x = self.flatten(input_x)
+        input_x = nn.functional.tanh(self.fc1_layer(input_x))
+        input_x = nn.functional.tanh(self.fc2_layer(input_x))
+        output = self.critic_out_layer(input_x)
+        return output
+
+class ActorNetwork(nn.Module):
+    def __init__(self, action_size: int) -> None:
+        super().__init__()
+        self.flatten = nn.Flatten(start_dim=0)
+        self.fc1_layer: nn.Linear = nn.Linear(42, HIDDEN_SIZE)
+        self.fc2_layer: nn.Linear = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
+        self.actor_out_layer: nn.Linear = nn.Linear(HIDDEN_SIZE, action_size)
+
+    def forward(
+            self, input_x: torch.Tensor
+    ) -> torch.Tensor:
+        input_x = self.flatten(input_x)
+        input_x = nn.functional.tanh(self.fc1_layer(input_x))
+        input_x = nn.functional.tanh(self.fc2_layer(input_x))
+        input_x = nn.functional.softmax(self.actor_out_layer(input_x), dim=0)
+        return input_x
+
+class CriticNetwork(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.flatten = nn.Flatten(start_dim=0)
+        self.fc1_layer: nn.Linear = nn.Linear(42, HIDDEN_SIZE)
+        self.fc2_layer: nn.Linear = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
+        self.critic_out_layer: nn.Linear = nn.Linear(HIDDEN_SIZE, 1)
+
+    def forward(self, input_x: torch.Tensor) -> torch.Tensor:
         input_x = self.flatten(input_x)
         input_x = nn.functional.relu(self.fc1_layer(input_x))
         input_x = nn.functional.relu(self.fc2_layer(input_x))
@@ -65,8 +97,9 @@ class ActorCritic(Agent):
                  agent_type: str = "actor_critic",
                  name: str = "Agent",
                  load: bool = False,
-                 lr_actor=1e-3,
-                 lr_critics=1e-3,
+                 lr_actor: float = 1e-3,
+                 lr_critics: float = 1e-3,
+                 conv: bool = False
                  ):
         super().__init__(action_space, agent, gamma, eps_init, eps_min, eps_step,
                          agent_type, name)
@@ -78,10 +111,13 @@ class ActorCritic(Agent):
         self.device = torch.device(
             "cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-        self.actor: ActorNetwork = ActorNetwork(action_size=7)
-        self.critic: CriticNetwork = CriticNetwork()
+        if conv:
+            self.actor: ActorNetwork = ConvActorNetwork(action_size=7)
+            self.critic: CriticNetwork = ConvCriticNetwork()
+        else:
+            self.actor: ActorNetwork = ActorNetwork(action_size=7)
+            self.critic: CriticNetwork = CriticNetwork()
 
-        #self.critic_loss_fn: nn.MSELoss = nn.MSELoss()
         self.actor_optimizer: optim.Adam = optim.Adam(
             params=self.actor.parameters(), lr=lr_actor
         )
