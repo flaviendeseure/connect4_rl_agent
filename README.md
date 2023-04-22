@@ -91,11 +91,20 @@ Once you have installed the dependencies, you can use the project by running the
 - **Here is an example command to train the agent(s):**
   - With poetry
   ```sh
-  poetry run main --train --epoch 1000
+  poetry run main --train --epoch 10000
   ``` 
   - With a virtual environment
   ```sh
-  python -m connect4_rl_agent --train --epoch 1000
+  python -m connect4_rl_agent --train --epoch 10000
+  ```   
+- **Here is an example command to evaluate an agent(s)**:
+  - With poetry
+  ```sh
+  poetry run main --eval --player_0 actor_critic --player_1 random --epoch 1000
+  ``` 
+  - With a virtual environment
+  ```sh
+  python -m connect4_rl_agent --eval --player_0 actor_critic --player_1 random --epoch 1000
   ```   
 - **Here is an example command to play the game against the agent(s)**:
   - With poetry
@@ -122,7 +131,15 @@ Once you have installed the dependencies, you can use the project by running the
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Results
-We trained the agent using an Actor-Critic algorithm and evaluated its performance against a random agent and a human player. The agent achieved a win rate of 70% against the random agent and 50% against the human player.
+We trained the agent using an Advantage Actor-Critic (A2C) algorithm and evaluated its performance against a random agent. The results are presented in the table below:
+|          |          | Number of victory | Number of draw | % of victory* | % of victory (without draw)* |
+|----------|----------|-------------------|----------------|---------------|------------------------------|
+| Player 1 | A2C      |        499        |        0       |     64.9%     |             64.9%            |
+|          | A2C Conv |        550        |        0       |     82.3%     |             82.3%            |
+| Player 2 | A2C      |        481        |       242      |     48.1%     |             63.5%            |
+|          | A2C Conv |        510        |       296      |     51.0%     |             72.4%            |
+| Mean     | A2C      |        490        |       121      |     56.5%     |             64.2%            |
+|          | A2C Conv |        530        |       148      |     66.7%     |            77.35%            |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
