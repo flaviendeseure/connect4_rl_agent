@@ -43,7 +43,8 @@
 
 
 ## About The Project
-This project implements an agent for Connect4 using Reinforcement Learning methods. The implementation is based on the PettingZoo library, which provides a standardized interface for multi-agent environments.
+This project implements an agent for Connect4 using Reinforcement Learning methods. The implementation is based on the PettingZoo library, which provides a standardized interface for multi-agent environments.  
+We implemented the Advantage Actor-Critic (A2C) algorithm.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -91,11 +92,11 @@ Once you have installed the dependencies, you can use the project by running the
 - **Here is an example command to train the agent(s):**
   - With poetry
   ```sh
-  poetry run main --train --epoch 10000
+  poetry run main --train --epoch 10000 --player_0 actor_critic --player_1 actor_critic
   ``` 
   - With a virtual environment
   ```sh
-  python -m connect4_rl_agent --train --epoch 10000
+  python -m connect4_rl_agent --train --epoch 10000 --player_0 actor_critic --player_1 actor_critic
   ```   
 - **Here is an example command to evaluate an agent(s)**:
   - With poetry
@@ -124,8 +125,8 @@ Once you have installed the dependencies, you can use the project by running the
 - ***--verbose:*** Level of verbosity during training or evaluation. **Default: 1**.
 - ***--save:*** Save the trained agent(s) after training. **Default: True**.
 - ***--load:*** Load a pre-trained agent(s). **Default: True**.
-- ***--player_0:*** Type of player for player 0. Available options are *actor_critic*, *random*, and *human*. **Default: actor_critic**.
-- ***--player_1:*** Type of player for player 1. Available options are *actor_critic*, *random*, and *human*. **Default: actor_critic**.
+- ***--player_0:*** Type of player for player 0. Available options are *actor_critic*, *actor_critic_conv*, *random*, and *human*. **Default: actor_critic**.
+- ***--player_1:*** Type of player for player 1. Available options are *actor_critic*, *actor_critic_conv*, *random*, and *human*. **Default: actor_critic**.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
