@@ -31,7 +31,6 @@ class ActorNetwork(nn.Module):
         input_x = self.fc1_layer(input_x)
         input_x = self.fc2_layer(input_x)
         input_x = nn.functional.softmax(self.actor_out_layer(input_x), dim=0)
-        input_x = dist.Categorical(input_x)
         return input_x
 
 
@@ -51,9 +50,9 @@ class CriticNetwork(nn.Module):
         input_x = self.flatten(input_x)
         input_x = nn.functional.relu(self.fc1_layer(input_x))
         input_x = nn.functional.relu(self.fc2_layer(input_x))
-        output = nn.functional.sigmoid(self.critic_out_layer(input_x))
+        output = self.critic_out_layer(input_x)
         return output
-
+    
 
 class ActorCritic(Agent):
     def __init__(self,
@@ -66,8 +65,8 @@ class ActorCritic(Agent):
                  agent_type: str = "actor_critic",
                  name: str = "Agent",
                  load: bool = False,
-                 lr_actor=1e-2,
-                 lr_critics=1e-2,
+                 lr_actor=1e-3,
+                 lr_critics=1e-3,
                  ):
         super().__init__(action_space, agent, gamma, eps_init, eps_min, eps_step,
                          agent_type, name)
@@ -82,7 +81,7 @@ class ActorCritic(Agent):
         self.actor: ActorNetwork = ActorNetwork(action_size=7)
         self.critic: CriticNetwork = CriticNetwork()
 
-        self.critic_loss_fn: nn.MSELoss = nn.MSELoss()
+        #self.critic_loss_fn: nn.MSELoss = nn.MSELoss()
         self.actor_optimizer: optim.Adam = optim.Adam(
             params=self.actor.parameters(), lr=lr_actor
         )
@@ -106,7 +105,9 @@ class ActorCritic(Agent):
         with torch.no_grad():
             state = torch.Tensor(observation)
             action = self.actor(state)
-        return np.int64(action.sample().cpu())
+            action = dist.Categorical(action)
+            action = action.sample()
+            return action.item()
 
     def update(
             self,
@@ -134,24 +135,24 @@ class ActorCritic(Agent):
             0,
             np.where(next_observation[..., 0] == 1, 1, -1)
         )).unsqueeze(0)
-        value_state: torch.Tensor = self.critic(observation)
-        value_next_state: torch.Tensor = self.critic(next_observation)
-        target: float = reward + self.gamma * value_next_state.detach()
 
-        # Calculate losses
-        # -norm_dist.log_prob(action).unsqueeze(0) * critic_loss.detach()
-        critic_loss: torch.Tensor = self.critic_loss_fn(value_state, target)
-        actor_loss = -self.actor(observation).log_prob(
-            torch.tensor([action])).float() * critic_loss.detach()
+        probs = self.actor(observation)
+        dist = torch.distributions.Categorical(probs=probs)
+        action = dist.sample()
 
-        # Perform backpropagation
-        self.actor_optimizer.zero_grad()
-        actor_loss.backward()
-        self.actor_optimizer.step()
+        advantage = reward + (1.0 - terminated) * self.gamma * self.critic(next_observation) - self.critic(observation)
+
+        critic_loss = advantage.pow(2).mean()
 
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
         self.critic_optimizer.step()
+
+        actor_loss = -dist.log_prob(action) * advantage.detach()
+        self.actor_optimizer.zero_grad()
+        actor_loss.backward()
+        self.actor_optimizer.step()
+        
 
     def save(self):
         torch.save(self.actor.state_dict(), self.actor_path)

@@ -41,15 +41,11 @@ class Game:
                             f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}, Ratio: {100 * (nb_wins_agent_1 / (nb_wins_agent_2 + nb_wins_agent_1)) : .2f}"
                         )
 
-                    # if verbose:
-                    #     print(
-                    #       f"Termination ({agent}), Reward: {reward}, info: {info}"
-                    #     )
                     self.env.step(None)
                 elif truncation:
                     if verbose:
                         print("Truncated")
-                else:
+                else: # we update the actor and critic networks weights every steps
                     if agent == "player_0":
                         action = self.player_0.get_action(last_observation)
                     else:
