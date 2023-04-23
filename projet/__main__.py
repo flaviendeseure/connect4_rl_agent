@@ -4,7 +4,7 @@ from typing import Union
 from pettingzoo.classic import connect_four_v3
 from pettingzoo.utils import OrderEnforcingWrapper
 
-from projet.agent import ActorCritic, Random, Human
+from projet.agent import ActorCritic, Random, Human,MCTS_Agent
 from projet.agent.base_agent import Agent
 from projet.game import Game
 
@@ -16,6 +16,8 @@ def get_player(player_type: str, space, name: str, load: bool = False) -> Union[
         return ActorCritic(space, name, load=load, name="conv_" + name, conv=True)
     elif player_type == "random":
         return Random(space, name, name=name)
+    elif player_type == "mcts":
+        return MCTS_Agent(space, name, agent_name=name)
     elif player_type == "human":
         return Human()
     else:
@@ -34,8 +36,8 @@ def main():
     parser.add_argument("--verbose", type=int, default=1)
     parser.add_argument("--save", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--load", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--player_0", type=str, default="actor_critic", choices=["actor_critic", "actor_critic_conv", "random", "human"])
-    parser.add_argument("--player_1", type=str, default="actor_critic", choices=["actor_critic", "actor_critic_conv", "random", "human"])
+    parser.add_argument("--player_0", type=str, default="actor_critic", choices=["actor_critic", "actor_critic_conv", "random", "human","mcts"])
+    parser.add_argument("--player_1", type=str, default="actor_critic", choices=["actor_critic", "actor_critic_conv", "random", "human","mcts"])
     args = parser.parse_args()
 
     if (args.play and args.train) or (args.play and args.eval) or (
