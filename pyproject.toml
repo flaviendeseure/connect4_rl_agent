@@ -5,6 +5,7 @@ description = ""
 authors = ["Yoan Gabison <yoan.gabison@student-cs.fr>"]
 readme = "README.md"
 
+
 [tool.poetry.dependencies]
 python = "^3.10,<3.12"
 pettingzoo = "^1.22.3"
@@ -13,9 +14,42 @@ tqdm = "^4.65.0"
 torch = "^2.0.0"
 
 
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.2.2"
+isort = "^5.12.0"
+black = "^23.3.0"
+flake8 = "^6.0.0"
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+
 [tool.poetry.scripts]
 main = "projet.__main__:main"
+
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.nox
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+
+[tool.isort]
+profile = "black"
+

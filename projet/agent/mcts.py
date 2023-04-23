@@ -1,5 +1,6 @@
 import numpy as np
 from pettingzoo.classic import connect_four_v3
+
 from projet.agent.base_agent import Agent
 
 
@@ -77,7 +78,7 @@ class MCTS_Agent(Agent):
             node.children.append(child_node)
 
     def get_legal_actions(self, env) -> list:
-        action_mask = env.state['action_mask']
+        action_mask = env.state["action_mask"]
         legal_actions = [i for i, is_legal in enumerate(action_mask) if is_legal]
         return legal_actions
 
@@ -89,10 +90,10 @@ class MCTS_Agent(Agent):
         if done:
             return rewards
         return 0
-    
+
     def update(self, obs, action, reward, terminated, next_obs):
         pass
-   
+
     def load(self):
         pass
 

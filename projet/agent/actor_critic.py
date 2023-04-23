@@ -22,9 +22,7 @@ class ConvActorNetwork(nn.Module):
         self.fc2_layer: nn.Linear = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
         self.actor_out_layer: nn.Linear = nn.Linear(HIDDEN_SIZE, action_size)
 
-    def forward(
-            self, input_x: torch.Tensor
-    ) -> torch.Tensor:
+    def forward(self, input_x: torch.Tensor) -> torch.Tensor:
         input_x = nn.functional.relu(self.conv_1(input_x))
         input_x = nn.functional.relu(self.conv_2(input_x))
         input_x = self.flatten(input_x)
@@ -53,6 +51,7 @@ class ConvCriticNetwork(nn.Module):
         output = self.critic_out_layer(input_x)
         return output
 
+
 class ActorNetwork(nn.Module):
     def __init__(self, action_size: int) -> None:
         super().__init__()
@@ -61,14 +60,13 @@ class ActorNetwork(nn.Module):
         self.fc2_layer: nn.Linear = nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
         self.actor_out_layer: nn.Linear = nn.Linear(HIDDEN_SIZE, action_size)
 
-    def forward(
-            self, input_x: torch.Tensor
-    ) -> torch.Tensor:
+    def forward(self, input_x: torch.Tensor) -> torch.Tensor:
         input_x = self.flatten(input_x)
         input_x = nn.functional.tanh(self.fc1_layer(input_x))
         input_x = nn.functional.tanh(self.fc2_layer(input_x))
         input_x = nn.functional.softmax(self.actor_out_layer(input_x), dim=0)
         return input_x
+
 
 class CriticNetwork(nn.Module):
     def __init__(self) -> None:
@@ -84,32 +82,35 @@ class CriticNetwork(nn.Module):
         input_x = nn.functional.relu(self.fc2_layer(input_x))
         output = self.critic_out_layer(input_x)
         return output
-    
+
 
 class ActorCritic(Agent):
-    def __init__(self,
-                 action_space: pettingzoo.utils.wrappers.base,
-                 agent: str,
-                 gamma: float = 0.99,
-                 eps_init: float = .5,
-                 eps_min: float = 1e-5,
-                 eps_step: float = 1e-3,
-                 agent_type: str = "actor_critic",
-                 name: str = "Agent",
-                 load: bool = False,
-                 lr_actor: float = 1e-3,
-                 lr_critics: float = 1e-3,
-                 conv: bool = False
-                 ):
-        super().__init__(action_space, agent, gamma, eps_init, eps_min, eps_step,
-                         agent_type, name)
+    def __init__(
+        self,
+        action_space: pettingzoo.utils.wrappers.base,
+        agent: str,
+        gamma: float = 0.99,
+        eps_init: float = 0.5,
+        eps_min: float = 1e-5,
+        eps_step: float = 1e-3,
+        agent_type: str = "actor_critic",
+        name: str = "Agent",
+        load: bool = False,
+        lr_actor: float = 1e-3,
+        lr_critics: float = 1e-3,
+        conv: bool = False,
+    ):
+        super().__init__(
+            action_space, agent, gamma, eps_init, eps_min, eps_step, agent_type, name
+        )
         self.actor_path = self.models_dir / Path(f"{name}_actor.pth")
         self.critic_path = self.models_dir / Path(f"{name}_critic.pth")
 
         self.gamma = gamma
 
-        self.device = torch.device(
-            "cuda") if torch.cuda.is_available() else torch.device("cpu")
+        self.device = (
+            torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        )
 
         if conv:
             self.actor: ActorNetwork = ConvActorNetwork(action_size=7)
@@ -130,14 +131,13 @@ class ActorCritic(Agent):
 
     def get_best_action(self, obs: dict) -> int:
         observation = obs["observation"]
-        observation = torch.Tensor(np.where(
-            np.logical_and(
-                observation[..., 0] == 0,
-                observation[..., 1] == 0
-            ),
-            0,
-            np.where(observation[..., 0] == 1, 1, -1)
-        )).unsqueeze(0)
+        observation = torch.Tensor(
+            np.where(
+                np.logical_and(observation[..., 0] == 0, observation[..., 1] == 0),
+                0,
+                np.where(observation[..., 0] == 1, 1, -1),
+            )
+        ).unsqueeze(0)
         with torch.no_grad():
             state = torch.Tensor(observation)
             action = self.actor(state)
@@ -146,37 +146,36 @@ class ActorCritic(Agent):
             return action.item()
 
     def update(
-            self,
-            obs: dict,
-            action: int,
-            reward: int,
-            terminated: bool,
-            next_obs: dict
+        self, obs: dict, action: int, reward: int, terminated: bool, next_obs: dict
     ):
         observation = obs["observation"]
-        observation = torch.Tensor(np.where(
-            np.logical_and(
-                observation[..., 0] == 0,
-                observation[..., 1] == 0
-            ),
-            0,
-            np.where(observation[..., 0] == 1, 1, -1)
-        )).unsqueeze(0)
+        observation = torch.Tensor(
+            np.where(
+                np.logical_and(observation[..., 0] == 0, observation[..., 1] == 0),
+                0,
+                np.where(observation[..., 0] == 1, 1, -1),
+            )
+        ).unsqueeze(0)
         next_observation = next_obs["observation"]
-        next_observation = torch.Tensor(np.where(
-            np.logical_and(
-                next_observation[..., 0] == 0,
-                next_observation[..., 1] == 0
-            ),
-            0,
-            np.where(next_observation[..., 0] == 1, 1, -1)
-        )).unsqueeze(0)
+        next_observation = torch.Tensor(
+            np.where(
+                np.logical_and(
+                    next_observation[..., 0] == 0, next_observation[..., 1] == 0
+                ),
+                0,
+                np.where(next_observation[..., 0] == 1, 1, -1),
+            )
+        ).unsqueeze(0)
 
         probs = self.actor(observation)
         dist = torch.distributions.Categorical(probs=probs)
         action = dist.sample()
 
-        advantage = reward + (1.0 - terminated) * self.gamma * self.critic(next_observation) - self.critic(observation)
+        advantage = (
+            reward
+            + (1.0 - terminated) * self.gamma * self.critic(next_observation)
+            - self.critic(observation)
+        )
 
         critic_loss = advantage.pow(2).mean()
 
@@ -188,7 +187,6 @@ class ActorCritic(Agent):
         self.actor_optimizer.zero_grad()
         actor_loss.backward()
         self.actor_optimizer.step()
-        
 
     def save(self):
         torch.save(self.actor.state_dict(), self.actor_path)

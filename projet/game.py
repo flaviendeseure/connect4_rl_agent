@@ -11,8 +11,10 @@ from projet.agent.base_agent import Agent
 
 class Game:
     def __init__(
-            self, env: OrderEnforcingWrapper, player_0: Union[Agent, Human],
-            player_1: Union[Agent, Human]
+        self,
+        env: OrderEnforcingWrapper,
+        player_0: Union[Agent, Human],
+        player_1: Union[Agent, Human],
     ) -> None:
         self.env = env
         self.player_0: Agent = player_0
@@ -29,7 +31,13 @@ class Game:
         for i in tqdm(range(epoch)):
             self.env.reset()
             for agent in self.env.agent_iter():
-                last_observation, reward, termination, truncation, info = self.env.last()
+                (
+                    last_observation,
+                    reward,
+                    termination,
+                    truncation,
+                    info,
+                ) = self.env.last()
                 if termination:
                     if reward == 1 and agent == "player_0":
                         nb_wins_agent_1 += 1
@@ -46,7 +54,7 @@ class Game:
                 elif truncation:
                     if verbose:
                         print("Truncated")
-                else: # we update the actor and critic networks weights every steps
+                else:  # we update the actor and critic networks weights every steps
                     if agent == "player_0":
                         action = self.player_0.get_action(last_observation)
                     else:
@@ -55,11 +63,13 @@ class Game:
 
                     observation, reward, termination, truncation, info = self.env.last()
                     if agent == "player_0":
-                        self.player_0.update(last_observation, action, reward,
-                                             termination, observation)
+                        self.player_0.update(
+                            last_observation, action, reward, termination, observation
+                        )
                     else:
-                        self.player_1.update(last_observation, action, reward,
-                                             termination, observation)
+                        self.player_1.update(
+                            last_observation, action, reward, termination, observation
+                        )
 
             if save and i % 1000 == 0:
                 self.save()
@@ -76,7 +86,13 @@ class Game:
         for i in tqdm(range(nb_eval)):
             self.env.reset()
             for agent in self.env.agent_iter():
-                last_observation, reward, termination, truncation, info = self.env.last()
+                (
+                    last_observation,
+                    reward,
+                    termination,
+                    truncation,
+                    info,
+                ) = self.env.last()
                 if termination:
                     if reward == 1 and agent == "player_0":
                         nb_wins_agent_1 += 1
@@ -126,11 +142,13 @@ class Game:
 
                 observation, reward, termination, truncation, _ = self.env.last()
                 if agent == "player_0" and not isinstance(self.player_0, Human):
-                    self.player_0.update(last_observation, action, reward,
-                                         termination, observation)
+                    self.player_0.update(
+                        last_observation, action, reward, termination, observation
+                    )
                 elif agent == "player_1" and not isinstance(self.player_1, Human):
-                    self.player_1.update(last_observation, action, reward,
-                                         termination, observation)
+                    self.player_1.update(
+                        last_observation, action, reward, termination, observation
+                    )
                 self.env.render()
 
     def watch(self):

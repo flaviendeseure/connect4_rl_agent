@@ -8,15 +8,15 @@ import pettingzoo
 
 class Agent(ABC):
     def __init__(
-            self,
-            action_space: pettingzoo.utils.wrappers.base,
-            agent: str,
-            gamma: float = 0.99,
-            eps_init: float = .5,
-            eps_min: float = 1e-5,
-            eps_step: float = 1e-3,
-            agent_type: str = "actor_critic",
-            name: str = "Agent",
+        self,
+        action_space: pettingzoo.utils.wrappers.base,
+        agent: str,
+        gamma: float = 0.99,
+        eps_init: float = 0.5,
+        eps_min: float = 1e-5,
+        eps_step: float = 1e-3,
+        agent_type: str = "actor_critic",
+        name: str = "Agent",
     ):
 
         self.action_space: pettingzoo.utils.wrappers.base = action_space
@@ -32,14 +32,14 @@ class Agent(ABC):
 
         self.reset()
 
-    def eps_greedy(self, obs: dict, eps: Union[float,None] = None) -> int:
+    def eps_greedy(self, obs: dict, eps: Union[float, None] = None) -> int:
         eps = eps or self.eps
         if np.random.random() < eps:
             return self.action_space(self.agent).sample(mask=obs["action_mask"])
         else:
             return self.get_best_action(obs)
 
-    def get_action(self, obs: dict, eps: Union[float,None] = None) -> int:
+    def get_action(self, obs: dict, eps: Union[float, None] = None) -> int:
         return self.eps_greedy(obs, eps)
 
     def epsilon_decay(self) -> None:
@@ -51,12 +51,7 @@ class Agent(ABC):
 
     @abstractmethod
     def update(
-            self,
-            obs: dict,
-            action: int,
-            reward: float,
-            terminated: bool,
-            next_obs: dict
+        self, obs: dict, action: int, reward: float, terminated: bool, next_obs: dict
     ):
         raise NotImplementedError
 
