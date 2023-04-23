@@ -100,6 +100,7 @@ class ActorCritic(Agent):
         lr_actor: float = 1e-3,
         lr_critics: float = 1e-3,
         conv: bool = False,
+        is_train: bool = True,
     ):
         super().__init__(
             action_space, agent, gamma, eps_init, eps_min, eps_step, agent_type, name
@@ -130,8 +131,9 @@ class ActorCritic(Agent):
         if load:
             self.load()
 
-    def get_action(self, obs: dict, 
-                   eps: Union[float,None] = None) -> int:
+        self.is_train: bool = is_train
+
+    def get_action(self, obs: dict, eps: Union[float, None] = None) -> int:
         return self.get_best_action(obs)
 
     def get_best_action(self, obs: dict) -> int:
@@ -146,8 +148,11 @@ class ActorCritic(Agent):
         with torch.no_grad():
             state = torch.Tensor(observation)
             action = self.actor(state)
-            action = dist.Categorical(action)
-            action = action.sample()
+            if self.is_train:
+                action = dist.Categorical(action)
+                action = action.sample()
+            else:
+                action = torch.argmax(action)
             return action.item()
 
     def update(

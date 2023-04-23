@@ -82,9 +82,10 @@ class Game:
         nb_wins_agent_1: int = 0
         nb_wins_agent_2: int = 0
         nb_draws: int = 0
-
-        for i in tqdm(range(nb_eval)):
+        i: int = 0
+        while (nb_wins_agent_1 + nb_wins_agent_2 + nb_draws) < nb_eval:
             self.env.reset()
+            was_draw: bool = False
             for agent in self.env.agent_iter():
                 (
                     last_observation,
@@ -96,11 +97,17 @@ class Game:
                 if termination:
                     if reward == 1 and agent == "player_0":
                         nb_wins_agent_1 += 1
+                        i += 1
                     elif reward == 1 and agent == "player_1":
                         nb_wins_agent_2 += 1
+                        i += 1
                     elif reward == 0 and agent == "player_0":
+                        was_draw = True
+                    elif reward == 0 and agent == "player_1" and was_draw:
                         nb_draws += 1
-                    if i % 100 == 0 and verbose and i != 0 and agent == "player_0":
+                        i += 1
+
+                    if i % 50 == 0 and verbose and i != 0 and agent == "player_0":
                         print(
                             f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}"
                         )

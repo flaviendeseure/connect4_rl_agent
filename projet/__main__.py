@@ -10,16 +10,18 @@ from projet.game import Game
 
 
 def get_player(
-    player_type: str, space, name: str, load: bool = False
+    player_type: str, space, name: str, load: bool = False, is_training: bool = False
 ) -> Union[Agent, Human]:
     if player_type == "actor_critic":
-        return ActorCritic(space, name, load=load, name=name)
+        return ActorCritic(space, name, load=load, name=name, is_train=is_training)
     elif player_type == "actor_critic_conv":
-        return ActorCritic(space, name, load=load, name="conv_" + name, conv=True)
+        return ActorCritic(
+            space, name, load=load, name="conv_" + name, conv=True, is_train=is_training
+        )
     elif player_type == "random":
         return Random(space, name, name=name)
     elif player_type == "mcts":
-        return MCTS_Agent(space, name, agent_name=name)
+        return MCTS_Agent(space, name, agent_name=name, n_simulations=100)
     elif player_type == "human":
         return Human()
     else:
@@ -76,8 +78,12 @@ def main():
 
     env: OrderEnforcingWrapper = connect_four_v3.env(render_mode="ansi")
     space = env.action_space
-    player_0 = get_player(args.player_0, space, "player_0", load=args.load)
-    player_1 = get_player(args.player_1, space, "player_1", load=args.load)
+    player_0 = get_player(
+        args.player_0, space, "player_0", load=args.load, is_training=args.train
+    )
+    player_1 = get_player(
+        args.player_1, space, "player_1", load=args.load, is_training=args.train
+    )
     game = Game(env, player_0, player_1)
 
     if args.train:
