@@ -43,8 +43,7 @@
 
 
 ## About The Project
-This project implements an agent for Connect4 using Reinforcement Learning methods. The implementation is based on the PettingZoo library, which provides a standardized interface for multi-agent environments.  
-We implemented the Advantage Actor-Critic (A2C) algorithm.
+In this project, we developed and evaluated several reinforcement learning agents for the Connect Four game using different techniques such as Monte Carlo search trees (MCTS) and deep neural networks with Advantage Actor-Critic (A2C). Our goal was to create an agent capable of competing with human players and to further our understanding of the challenges and opportunities associated with applying reinforcement learning to games. The implementation is based on the PettingZoo library, which provides a standardized interface for multi-agent environments.  
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -125,8 +124,8 @@ Once you have installed the dependencies, you can use the project by running the
 - ***--verbose:*** Level of verbosity during training or evaluation. **Default: 1**.
 - ***--save:*** Save the trained agent(s) after training. **Default: True**.
 - ***--load:*** Load a pre-trained agent(s). **Default: True**.
-- ***--player_0:*** Type of player for player 0. Available options are *actor_critic*, *actor_critic_conv*, *random*, and *human*. **Default: actor_critic**.
-- ***--player_1:*** Type of player for player 1. Available options are *actor_critic*, *actor_critic_conv*, *random*, and *human*. **Default: actor_critic**.
+- ***--player_0:*** Type of player for player 0. Available options are *actor_critic*, *actor_critic_conv*, *mcts*, *random*, and *human*. **Default: actor_critic**.
+- ***--player_1:*** Type of player for player 1. Available options are *actor_critic*, *actor_critic_conv*, *mcts*, *random*, and *human*. **Default: actor_critic**.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
