@@ -33,6 +33,7 @@ def main():
     parser.add_argument("--train", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--eval", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--play", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument("--watch", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--epoch", type=int, default=100_000)
     parser.add_argument("--verbose", type=int, default=1)
     parser.add_argument("--save", action=argparse.BooleanOptionalAction, default=True)
@@ -54,11 +55,14 @@ def main():
     if (
         (args.play and args.train)
         or (args.play and args.eval)
+        or (args.play and args.watch)
         or (args.train and args.eval)
+        or (args.train and args.watch)
+        or (args.eval and args.watch)
     ):
         raise Exception("You can't do multiple actions at the same time")
 
-    if not args.play and not args.train and not args.eval:
+    if not args.play and not args.train and not args.eval and not args.watch:
         raise Exception("You need to specify an action")
 
     if args.play:
@@ -90,6 +94,8 @@ def main():
         game.train(epoch=args.epoch, verbose=args.verbose, save=args.save)
     elif args.eval:
         game.eval(nb_eval=args.epoch, verbose=args.verbose)
+    elif args.watch:
+        game.watch()
 
 
 if __name__ == "__main__":

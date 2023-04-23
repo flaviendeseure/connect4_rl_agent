@@ -29,6 +29,7 @@ class Game:
         nb_draws: int = 0
 
         for i in tqdm(range(epoch)):
+            was_draw: bool = False
             self.env.reset()
             for agent in self.env.agent_iter():
                 (
@@ -44,7 +45,10 @@ class Game:
                     elif reward == 1 and agent == "player_1":
                         nb_wins_agent_2 += 1
                     elif reward == 0 and agent == "player_0":
+                        was_draw = True
+                    elif reward == 0 and agent == "player_1" and was_draw:
                         nb_draws += 1
+
                     if i % 500 == 0 and verbose and i != 0 and agent == "player_0":
                         print(
                             f"Agent 1 wins: {nb_wins_agent_1}, Agent 2 wins: {nb_wins_agent_2}, Draws: {nb_draws}, Ratio: {100 * (nb_wins_agent_1 / (nb_wins_agent_2 + nb_wins_agent_1)) : .2f}"
@@ -60,8 +64,8 @@ class Game:
                     else:
                         action = self.player_1.get_action(last_observation)
                     self.env.step(action)
-
                     observation, reward, termination, truncation, info = self.env.last()
+
                     if agent == "player_0":
                         self.player_0.update(
                             last_observation, action, reward, termination, observation
