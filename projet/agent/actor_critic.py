@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pettingzoo
@@ -128,6 +129,10 @@ class ActorCritic(Agent):
 
         if load:
             self.load()
+
+    def get_action(self, obs: dict, 
+                   eps: Union[float,None] = None) -> int:
+        return self.get_best_action(obs)
 
     def get_best_action(self, obs: dict) -> int:
         observation = obs["observation"]
