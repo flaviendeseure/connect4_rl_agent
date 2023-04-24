@@ -132,14 +132,18 @@ Once you have installed the dependencies, you can use the project by running the
 
 ## Results
 We trained the agent using an Advantage Actor-Critic (A2C) algorithm and evaluated its performance against a random agent. The results are presented in the table below:
-|          |          | Number of victory | Number of draw | % of victory* | % of victory (without draw)* |
-|----------|----------|-------------------|----------------|---------------|------------------------------|
-| Player 1 | A2C      |        499        |        0       |     64.9%     |             64.9%            |
-|          | A2C Conv |        550        |        0       |     82.3%     |             82.3%            |
-| Player 2 | A2C      |        481        |       242      |     48.1%     |             63.5%            |
-|          | A2C Conv |        510        |       296      |     51.0%     |             72.4%            |
-| Mean     | A2C      |        490        |       121      |     56.5%     |             64.2%            |
-|          | A2C Conv |        530        |       148      |     66.7%     |            77.35%            |
+|           |              | Nb of victory| Nb of losses | % of victory |
+|-----------|--------------|--------------|--------------|--------------|
+| Player 1  | A2C          | 912          | 88           | 91.2%        |
+|           | **A2C Conv** | **996**      | **4**        | **99.6%**    |
+|           | MCTS         | 785          | 215          | 78.5%        |
+| Player 2  | A2C          | 901          | 99           | 90.1%        |
+|           | **A2C Conv** | **956**      | **44**       | **95.6%**    |
+|           | MCTS         | 622          | 378          | 62.2%        |
+| Mean      | A2C          | 906.5        | 93.5         | 90.5%        |
+|           | **A2C Conv** | **976**      | **24**       | **97.6%**    |
+|           | MCTS         | 703.5        | 296.5        | 70.3%        |
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
